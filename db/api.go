@@ -4,8 +4,8 @@ import "time"
 
 //Team represents a robotics competition team
 type Team struct {
-	Name   string  `json:"name"`
-	Scores []int32 `json:"scores"`
+	Name   string   `json:"name"`
+	Scores []*int32 `json:"scores"`
 }
 
 //Competition represents a robotics competition

@@ -27,7 +27,7 @@ func intToBytes(i int32) []byte {
 func readTeam(b *bolt.Bucket, rounds int) (*Team, error) {
 	t := &Team{
 		Name:   string(b.Get([]byte("name"))),
-		Scores: make([]int32, rounds),
+		Scores: make([]*int32, rounds),
 	}
 	if t.Name == "" {
 		return nil, &Error{Err: nil, Description: "Team name was empty"}
@@ -44,9 +44,9 @@ func readTeam(b *bolt.Bucket, rounds int) (*Team, error) {
 			if err != nil {
 				return nil, &Error{Err: err, Description: fmt.Sprintf("Couldn't decode Team(%s) Round(%d) score(%#v)", t.Name, i, score)}
 			}
-			t.Scores[i] = val
+			t.Scores[i] = &val
 		} else {
-			return nil, &Error{Err: nil, Description: fmt.Sprintf("Team(%s) Round(%d) score was nil", t.Name, i)}
+			t.Scores[i] = nil
 		}
 	}
 
@@ -69,7 +69,11 @@ func writeTeam(b *bolt.Bucket, t *Team, rounds int) error {
 	}
 
 	for i := 0; i < rounds; i++ {
-		err = scoresBucket.Put(intToBytes(int32(i)), intToBytes(t.Scores[i]))
+		if t.Scores[i] == nil {
+			continue
+		}
+
+		err = scoresBucket.Put(intToBytes(int32(i)), intToBytes(*t.Scores[i]))
 		if err != nil {
 			return &Error{Err: err, Description: fmt.Sprintf("Couldn't write Team(%s) Round(%d) Score(%d)", t.Name, i, t.Scores[i])}
 		}

@@ -36,7 +36,7 @@ func (db *boltDB) Init(name string, rounds int, teams []string, username, passwo
 	for _, team := range teams {
 		t := &Team{
 			Name:   team,
-			Scores: make([]int32, rounds),
+			Scores: make([]*int32, rounds),
 		}
 
 		c.Teams = append(c.Teams, t)
