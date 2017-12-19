@@ -78,7 +78,7 @@ func main() {
 	r.PathPrefix("/api/").Handler(apiRouter)
 	r.PathPrefix("/").Handler(client.Handler)
 
-	fmt.Println("Listening on", fmt.Sprintf("%s:%d", *addr, *port))
+	fmt.Println("Open your browser to ", fmt.Sprintf("http://localhost:%d", *port))
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", *addr, *port), r)
 	if err != nil {
 		fmt.Println("Error serving on", fmt.Sprintf("%s:%d", *addr, *port), ":", err)
