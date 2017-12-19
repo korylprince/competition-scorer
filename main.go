@@ -7,7 +7,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/korylprince/competition-scorer/api"
+	"github.com/korylprince/competition-scorer/client"
 	"github.com/korylprince/competition-scorer/db"
 )
 
@@ -70,7 +72,11 @@ func main() {
 		return
 	}
 
-	r := api.NewRouter(d, api.NewMemorySessionStore(time.Hour*8), api.NewSubscribeService())
+	apiRouter := api.NewRouter(d, api.NewMemorySessionStore(time.Hour*8), api.NewSubscribeService())
+
+	r := mux.NewRouter()
+	r.PathPrefix("/api/").Handler(apiRouter)
+	r.PathPrefix("/").Handler(client.Handler)
 
 	fmt.Println("Listening on", fmt.Sprintf("%s:%d", *addr, *port))
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", *addr, *port), r)
