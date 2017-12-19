@@ -114,36 +114,6 @@ func (db *boltDB) UpdateCredentials(username string, password string) (err error
 	return nil
 }
 
-func (db *boltDB) LastModified() (t time.Time, err error) {
-	tx, err := db.Begin(false)
-	if err != nil {
-		return t, &Error{Err: err, Description: "Couldn't start transaction"}
-	}
-	defer func() {
-		lErr := tx.Rollback()
-		if err == nil && lErr != nil {
-			err = &Error{Err: err, Description: "Couldn't end transaction"}
-		}
-	}()
-
-	competitionBucket := tx.Bucket([]byte("competition"))
-	if competitionBucket == nil {
-		return t, &Error{Err: nil, Description: "Database competition Bucket was nil"}
-	}
-
-	configBucket := competitionBucket.Bucket([]byte("config"))
-	if configBucket == nil {
-		return t, &Error{Err: nil, Description: "Competition config Bucket was nil"}
-	}
-
-	err = t.UnmarshalBinary(configBucket.Get([]byte("last_modified")))
-	if err != nil {
-		return t, &Error{Err: err, Description: "Couldn't decode last_modified"}
-	}
-
-	return t, nil
-}
-
 func (db *boltDB) getLatestRevision(tx *bolt.Tx) (int32, error) {
 	configBucket := tx.Bucket([]byte("config"))
 	if configBucket == nil {
