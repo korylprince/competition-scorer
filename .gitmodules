@@ -1,0 +1,3 @@
+[submodule "client/data"]
+	path = client/data
+	url = https://github.com/korylprince/competition-scorer-client.git
